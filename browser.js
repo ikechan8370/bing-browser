@@ -9,11 +9,11 @@ class Puppeteer {
     constructor () {
         let args = [
             '--exclude-switches',
-            '--no-sandbox',
+            // '--no-sandbox',
             '--remote-debugging-port=51777',
-            '--disable-setuid-sandbox',
+            // '--disable-setuid-sandbox',
             '--disable-infobars',
-            '--disable-dev-shm-usage',
+            // '--disable-dev-shm-usage',
             '--disable-blink-features=AutomationControlled',
             '--ignore-certificate-errors',
             '--no-first-run',
@@ -26,8 +26,8 @@ class Puppeteer {
             // '--disable-accelerated-2d-canvas',
             '--disable-web-security',
             '--window-size=800,600',
-            '--headless'
-            // '--proxy-server=http://127.0.0.1:7890'
+            // '--headless'
+            '--proxy-server=http://127.0.0.1:7890'
 
             // '--shm-size=1gb'
         ]
@@ -122,9 +122,6 @@ class ChatGPTPuppeteer extends Puppeteer {
             await this._page.goto(chatUrl, {
                 waitUntil: 'networkidle2'
             })
-            // try {
-            //     await this._page.waitForNavigation({ timeout: 3000 })
-            // } catch (e) {}
 
         } catch (err) {
             if (this.browser) {
@@ -140,6 +137,9 @@ class ChatGPTPuppeteer extends Puppeteer {
         return true
     }
 
+    async getCookies() {
+        return await this._page.cookies()
+    }
     async sendRequest (
         url, method, body, newHeaders
     ) {
@@ -166,29 +166,38 @@ class ChatGPTPuppeteer extends Puppeteer {
 }
 
 async function browserNormalFetch (url, headers, body, method) {
-    const res = await fetch(url, {
-        method,
-        body: method.toLowerCase() !== 'get' ? JSON.stringify(body) : undefined,
-        headers: headers
-    })
-    let responseHeaders = {}
-    res.headers.forEach((v, k) => {
-        responseHeaders[k] = v
-    })
-    let result = {
-        status: res.status,
-        statusText: res.statusText,
-        body: await res.json(),
-        headers: responseHeaders
-    }
-    if (res.status !== 200) {
-        result.error = {
-            message: result.body.detail.message,
-            statusCode: res.status,
-            statusText: res.statusText
+    try {
+        console.log({url})
+        const res = await fetch(url, {
+            method,
+            body: method.toLowerCase() !== 'get' ? JSON.stringify(body) : undefined,
+            headers: headers
+        })
+        let responseHeaders = {}
+        res.headers.forEach((v, k) => {
+            responseHeaders[k] = v
+        })
+        let result = {
+            status: res.status,
+            statusText: res.statusText,
+            body: await res.json(),
+            headers: responseHeaders
+        }
+        if (res.status !== 200) {
+            result.error = {
+                message: result.body.detail.message,
+                statusCode: res.status,
+                statusText: res.statusText
+            }
+        }
+        return result
+    } catch (err) {
+        return {
+            error: err.message
         }
     }
-    return result
+
+
 }
 
 
