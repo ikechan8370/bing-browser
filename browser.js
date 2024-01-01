@@ -9,24 +9,24 @@ class Puppeteer {
     constructor () {
         let args = [
             '--exclude-switches',
-            // '--no-sandbox',
+            '--no-sandbox',
             '--remote-debugging-port=51777',
-            // '--disable-setuid-sandbox',
+            '--disable-setuid-sandbox',
             '--disable-infobars',
-            // '--disable-dev-shm-usage',
+            '--disable-dev-shm-usage',
             '--disable-blink-features=AutomationControlled',
             '--ignore-certificate-errors',
             '--no-first-run',
             '--no-service-autorun',
             '--password-store=basic',
-            // '--system-developer-mode',
+            '--system-developer-mode',
             '--mute-audio',
             '--disable-default-apps',
             '--no-zygote',
-            // '--disable-accelerated-2d-canvas',
+            '--disable-accelerated-2d-canvas',
             '--disable-web-security',
             '--window-size=800,600',
-            // '--headless'
+            '--headless',
             '--proxy-server=http://127.0.0.1:7890'
 
             // '--shm-size=1gb'
