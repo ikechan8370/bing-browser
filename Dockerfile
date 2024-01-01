@@ -3,9 +3,9 @@ FROM node:18-bullseye-slim
 RUN apt-get update && \
     apt-get install -y wget
 
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
-    apt-get install -yf ./google-chrome-stable_current_amd64.deb && \
-    rm google-chrome-stable_current_amd64.deb
+RUN wget https://s.d201.eu.org/microsoft-edge-stable_114.0.1823.82-1_amd64.deb && \
+    apt-get install -yf ./microsoft-edge-stable_114.0.1823.82-1_amd64.deb && \
+    rm microsoft-edge-stable_114.0.1823.82-1_amd64.deb
 
 ADD . /app
 
