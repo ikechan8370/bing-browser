@@ -27,7 +27,7 @@ class Puppeteer {
             '--disable-web-security',
             '--window-size=800,600',
             '--headless',
-            '--proxy-server=http://127.0.0.1:7890'
+            // '--proxy-server=http://127.0.0.1:7890'
 
             // '--shm-size=1gb'
         ]
