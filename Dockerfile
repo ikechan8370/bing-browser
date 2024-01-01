@@ -11,7 +11,7 @@ ADD . /app
 
 WORKDIR /app
 
-RUN npm install -g pnpm && pnpm i
+RUN PUPPETEER_SKIP_DOWNLOAD=true npm install
 
 RUN apt-get clean ; \
     		rm -rf /var/cache/* /var/log/apt/* /var/lib/apt/lists/* /tmp/*
