@@ -33,7 +33,7 @@ class Puppeteer {
 
             // '--shm-size=1gb'
         ]
-        if (config.headless) {
+        if (config.puppeteer.headless) {
             args.push('--headless')
         }
         if (config.proxy.proxy) {

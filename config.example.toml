@@ -11,3 +11,4 @@ password = "password"
 [puppeteer]
 # edge recommended
 executable_path = ""
+headless = true

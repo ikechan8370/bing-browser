@@ -1,0 +1,8 @@
+services:
+  bing:
+    image: geyinchi/bing-conv-creator:latest
+    restart: always
+    ports:
+      - "33000:3000"
+    volumes:
+      - ./config.toml:/app/config.toml
