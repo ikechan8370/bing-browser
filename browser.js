@@ -127,10 +127,10 @@ class ChatGPTPuppeteer extends Puppeteer {
                 (await this.browser.pages())[0] || (await this.browser.newPage())
             await this._page.setCacheEnabled(false)
             // await this._page.setRequestInterception(true);
-            if (config.proxy && config.username && config.password) {
+            if (config.proxy.proxy && config.proxy.username && config.proxy.password) {
                 await this._page.authenticate({
-                    username: config.username,
-                    password: config.password
+                    username: config.proxy.username,
+                    password: config.proxy.password
                 })
             }
             await this._page.goto(chatUrl, {
