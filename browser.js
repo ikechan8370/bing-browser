@@ -2,11 +2,13 @@ const lodash = require('lodash');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const delay = require('delay')
 const {v4: uuidv4} = require('uuid')
+const {readConfig} = require("./config");
 const chatUrl = 'https://www.bing.com/chat'
 let puppeteer = {}
 
 class Puppeteer {
-    constructor () {
+    constructor() {
+        readConfig()
         let args = [
             '--exclude-switches',
             '--no-sandbox',
@@ -26,11 +28,17 @@ class Puppeteer {
             '--disable-accelerated-2d-canvas',
             '--disable-web-security',
             '--window-size=800,600',
-            '--headless',
+            // '--headless',
             // '--proxy-server=http://127.0.0.1:7890'
 
             // '--shm-size=1gb'
         ]
+        if (config.headless) {
+            args.push('--headless')
+        }
+        if (config.proxy.proxy) {
+            args.push(`--proxy=${config.proxy.proxy}`)
+        }
         if (process.env.DISPLAY) {
             args.push(`--display=${process.env.DISPLAY}`)
         }
@@ -40,11 +48,11 @@ class Puppeteer {
             headless: false,
             args
         }
-        let path = process.env.executablePath || "C:\\Program Files (x86)\\Microsoft\\Edge Dev\\Application\\msedge.exe"
+        let path = config.puppeteer.executable_path || "C:\\Program Files (x86)\\Microsoft\\Edge Dev\\Application\\msedge.exe"
         this.config.executablePath = path
     }
 
-    async initPupp () {
+    async initPupp() {
         if (!lodash.isEmpty(puppeteer)) return puppeteer
         puppeteer = (await import('puppeteer-extra')).default
         const pluginStealth = StealthPlugin()
@@ -55,7 +63,7 @@ class Puppeteer {
     /**
      * 初始化chromium
      */
-    async browserInit () {
+    async browserInit() {
         await this.initPupp()
         if (this.browser) return this.browser
         if (this.lock) return false
@@ -64,7 +72,7 @@ class Puppeteer {
         console.log('chatgpt puppeteer 启动中...')
         const browserURL = 'http://127.0.0.1:51777'
         try {
-            this.browser = await puppeteer.connect({ browserURL })
+            this.browser = await puppeteer.connect({browserURL})
         } catch (e) {
             /** 初始化puppeteer */
             this.browser = await puppeteer.launch(this.config).catch((err) => {
@@ -94,7 +102,7 @@ class Puppeteer {
 }
 
 class ChatGPTPuppeteer extends Puppeteer {
-    constructor (opts = {}) {
+    constructor(opts = {}) {
         super()
         const {
             debug = false,
@@ -103,7 +111,7 @@ class ChatGPTPuppeteer extends Puppeteer {
         this._debug = !!debug
     }
 
-    async getBrowser () {
+    async getBrowser() {
         if (this.browser) {
             return this.browser
         } else {
@@ -111,7 +119,7 @@ class ChatGPTPuppeteer extends Puppeteer {
         }
     }
 
-    async init () {
+    async init() {
         console.info('init chatgpt browser')
         try {
             this.browser = await this.getBrowser()
@@ -119,6 +127,12 @@ class ChatGPTPuppeteer extends Puppeteer {
                 (await this.browser.pages())[0] || (await this.browser.newPage())
             await this._page.setCacheEnabled(false)
             // await this._page.setRequestInterception(true);
+            if (config.proxy && config.username && config.password) {
+                await this._page.authenticate({
+                    username: config.username,
+                    password: config.password
+                })
+            }
             await this._page.goto(chatUrl, {
                 waitUntil: 'networkidle2'
             })
@@ -140,7 +154,16 @@ class ChatGPTPuppeteer extends Puppeteer {
     async getCookies() {
         return await this._page.cookies()
     }
-    async sendRequest (
+
+    async cleanCookies() {
+        const client = await this._page.target().createCDPSession();
+        await client.send('Network.clearBrowserCookies');
+        await client.send('Network.clearBrowserCache');
+        //await this._page.deleteCookie();
+        await this._page.reload()
+    }
+
+    async sendRequest(
         url, method, body, newHeaders
     ) {
 
@@ -156,7 +179,8 @@ class ChatGPTPuppeteer extends Puppeteer {
 
         return result
     }
-    async close () {
+
+    async close() {
         if (this.browser) {
             await this.browser.close()
         }
@@ -165,7 +189,7 @@ class ChatGPTPuppeteer extends Puppeteer {
     }
 }
 
-async function browserNormalFetch (url, headers, body, method) {
+async function browserNormalFetch(url, headers, body, method) {
     try {
         console.log({url})
         const res = await fetch(url, {
@@ -199,7 +223,6 @@ async function browserNormalFetch (url, headers, body, method) {
 
 
 }
-
 
 
 module.exports = {ChatGPTPuppeteer}

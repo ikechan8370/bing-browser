@@ -1,0 +1,13 @@
+[proxy]
+# cf proxy
+cf = ""
+# proxy without username and password, http:// or socks5://
+proxy = "http://127.0.0.1:1080"
+# proxy username
+username = "user"
+# proxy password
+password = "password"
+
+[puppeteer]
+# edge recommended
+executable_path = ""
