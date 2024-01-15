@@ -37,7 +37,7 @@ class Puppeteer {
             args.push('--headless')
         }
         if (config.proxy.proxy) {
-            args.push(`--proxy=${config.proxy.proxy}`)
+            args.push(`--proxy-server=${config.proxy.proxy}`)
         }
         if (process.env.DISPLAY) {
             args.push(`--display=${process.env.DISPLAY}`)
